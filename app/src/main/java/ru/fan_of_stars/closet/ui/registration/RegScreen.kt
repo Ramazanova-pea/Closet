@@ -1,40 +1,28 @@
 package ru.fan_of_stars.closet.ui.registration
 
 import AppTheme
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.UiMode
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import darkScheme
-import lightScheme
+import androidx.navigation.NavController
+import ru.fan_of_stars.closet.ui.theme.onSurfaceLight
 import ru.fan_of_stars.closet.ui.theme.*
 
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+
 @Composable
-fun RegScreen() {
-    val colors = if (isSystemInDarkTheme()) darkScheme else lightScheme
-    with(colors) {
+fun RegScreen(navController: NavController) {
+    AppTheme () {
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -46,7 +34,7 @@ fun RegScreen() {
                 fontSize = 24.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                color = onSurface,
+                color = onSurfaceLight,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .fillMaxWidth()
@@ -96,7 +84,7 @@ fun RegScreen() {
             )
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate("closet_screen") },
                 modifier = Modifier
                     .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally)
             ) {
@@ -104,7 +92,7 @@ fun RegScreen() {
             }
 
             TextButton(
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate("log_screen") },
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally)

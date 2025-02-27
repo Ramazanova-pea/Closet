@@ -1,5 +1,6 @@
 package ru.fan_of_stars.closet.ui.login
 
+import AppTheme
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -8,16 +9,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import darkScheme
-import lightScheme
+import ru.fan_of_stars.closet.ui.theme.*
 
 @Preview(
     showBackground = true,
@@ -26,8 +28,7 @@ import lightScheme
 )
 @Composable
 fun LogScreen() {
-    val colors = if (isSystemInDarkTheme()) darkScheme else lightScheme
-    with(colors){
+    AppTheme (){
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -39,7 +40,7 @@ fun LogScreen() {
                 fontSize = 24.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                color = onSurface,
+                color = onSurfaceLight,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .fillMaxWidth()
@@ -52,7 +53,8 @@ fun LogScreen() {
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .padding(horizontal = 32.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+
 
             )
 
