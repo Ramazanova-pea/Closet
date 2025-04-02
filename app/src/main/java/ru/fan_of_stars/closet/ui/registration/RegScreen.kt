@@ -1,6 +1,7 @@
 package ru.fan_of_stars.closet.ui.registration
 
 import AppTheme
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -19,9 +21,13 @@ import ru.fan_of_stars.closet.ui.theme.onSurfaceLight
 import ru.fan_of_stars.closet.ui.theme.*
 
 
-
+@Preview (
+    showBackground = true,
+    showSystemUi = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
 @Composable
-fun RegScreen(navController: NavController) {
+fun RegScreen(/*navController: NavController*/) {
     AppTheme () {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -84,7 +90,8 @@ fun RegScreen(navController: NavController) {
             )
 
             Button(
-                onClick = { navController.navigate("closet_screen") },
+                onClick = {},
+                //onClick = { navController.navigate("closet_screen") },
                 modifier = Modifier
                     .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally)
             ) {
@@ -92,7 +99,8 @@ fun RegScreen(navController: NavController) {
             }
 
             TextButton(
-                onClick = { navController.navigate("log_screen") },
+                onClick = {},
+                //onClick = { navController.navigate("log_screen") },
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally)
