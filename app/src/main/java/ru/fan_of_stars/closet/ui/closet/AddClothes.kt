@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,7 +55,10 @@ import ru.fan_of_stars.closet.ui.theme.tertiaryContainerLightHighContrast
 
 
 @Composable
-fun AddClothes(onClose: () -> Unit) {
+fun AddClothes(
+    paddingValues: PaddingValues,
+    onClose: () -> Unit
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
@@ -63,14 +68,14 @@ fun AddClothes(onClose: () -> Unit) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(surfaceContainerLight)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
         ){
             Column (
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
                     text="Add new clothes",
-                    color = onSurfaceLight,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
@@ -82,7 +87,7 @@ fun AddClothes(onClose: () -> Unit) {
                         modifier = Modifier
                             .clip(RoundedCornerShape(16.dp))
                             .border(2.dp, tertiaryContainerLightHighContrast, RoundedCornerShape(16.dp) )
-                            .background(surfaceContainerHighLight)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                             .padding(16.dp)
 
                     ){
@@ -92,7 +97,7 @@ fun AddClothes(onClose: () -> Unit) {
                             Icon(
                                 imageVector = AddAPhoto,
                                 contentDescription = null,
-                                tint = onTertiaryContainerLight,
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
                             )
                             Text(
                                 text = "Camera",
@@ -108,7 +113,7 @@ fun AddClothes(onClose: () -> Unit) {
                         modifier = Modifier
                             .clip(RoundedCornerShape(16.dp))
                             .border(2.dp, tertiaryContainerLightHighContrast, RoundedCornerShape(16.dp) )
-                            .background(surfaceContainerHighLight)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                             .padding(16.dp)
 
                     ){
@@ -118,7 +123,7 @@ fun AddClothes(onClose: () -> Unit) {
                             Icon(
                                 imageVector = ImageIcon,
                                 contentDescription = null,
-                                tint = onTertiaryContainerLight,
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
                             )
                             Text(
                                 text = "Gallery",
@@ -135,12 +140,12 @@ fun AddClothes(onClose: () -> Unit) {
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(primaryContainerLight)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                 ) {
                     Icon(
                         imageVector = CheckIC,
                         contentDescription = null,
-                        tint = onSurfaceLight,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(8.dp)
                     )
                 }

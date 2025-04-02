@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,54 +32,57 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import ru.fan_of_stars.closet.ui.icons.*
 import ru.fan_of_stars.closet.ui.theme.*
 
 @Preview(
     showBackground = true,
     showSystemUi = true,
-    uiMode = UI_MODE_NIGHT_NO
+    uiMode = UI_MODE_NIGHT_NO,
+
 )
 @Composable
-fun ClosetScreen(viewModel: ClosetScreenViewModel = ClosetScreenViewModel()) {
+fun ClosetScreen(
+    navController: NavController,
+    viewModel: ClosetScreenViewModel = ClosetScreenViewModel(),
+    paddingValues: PaddingValues,
+) {
     val state = viewModel.state.collectAsState()
 //    val state = ClosetScreenStates.StateLooks
     val showAddClothes = remember { mutableStateOf(viewModel.showAddClothes) }
 
 
-    AppTheme()
-    {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(
-                    WindowInsets.statusBars.only(WindowInsetsSides.Top)
-                ),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Header()
-            when (state.value) {
-                is ClosetScreenStates.StateLooks -> LooksState(viewModel)
-                is ClosetScreenStates.StateClothes -> ClothesState(viewModel)
-                is ClosetScreenStates.StateIdle -> {}
 
-            }
-            Tag()
-            DownButton(
-                onClick = {
-                    when(state.value) {
-                        is ClosetScreenStates.StateLooks -> {}
-                        is ClosetScreenStates.StateClothes -> viewModel.showAddClothes()
-                        is ClosetScreenStates.StateIdle -> {}
-                    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Header()
+        when (state.value) {
+            is ClosetScreenStates.StateLooks -> LooksState(viewModel)
+            is ClosetScreenStates.StateClothes -> ClothesState(viewModel)
+            is ClosetScreenStates.StateIdle -> {}
+
+        }
+        Tag()
+        DownButton(
+            onClick = {
+                when (state.value) {
+                    is ClosetScreenStates.StateLooks -> {}
+                    is ClosetScreenStates.StateClothes -> viewModel.showAddClothes()
+                    is ClosetScreenStates.StateIdle -> {}
                 }
-            )
-        }
-        if (showAddClothes.value) {
-            AddClothes(onClose = { viewModel.closeAddClothes() })
-        }
+            }
+        )
     }
+    if (showAddClothes.value) {
+        //AddClothes(/*onClose = { viewModel.closeAddClothes() }*/)
+    }
+
 }
 
 @Composable
@@ -97,13 +101,13 @@ fun ClothesState(viewModel: ClosetScreenViewModel) {
             Text(
                 text = "Clothes",
                 fontSize = 16.sp,
-                color = primaryLight,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = "Looks",
                 fontSize = 16.sp,
-                color = onSurfaceLight,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .clickable { viewModel.onLooksClick() }
@@ -114,11 +118,11 @@ fun ClothesState(viewModel: ClosetScreenViewModel) {
             Image(
                 FilterIC,
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(primaryLight),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             )
         }
         Divider(
-            color = primaryLight,
+            color = MaterialTheme.colorScheme.primary,
             thickness = 2.dp,
         )
     }
@@ -141,14 +145,14 @@ fun LooksState(viewModel: ClosetScreenViewModel) {
             Text(
                 text = "Clothes",
                 fontSize = 16.sp,
-                color = onSurfaceLight,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.clickable { viewModel.onClothesClick() }
             )
             Text(
                 text = "Looks",
                 fontSize = 16.sp,
                 modifier = Modifier.padding(start = 8.dp),
-                color = primaryLight,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
             Spacer(
@@ -157,11 +161,11 @@ fun LooksState(viewModel: ClosetScreenViewModel) {
             Image(
                 FilterIC,
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(primaryLight),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             )
         }
         Divider(
-            color = primaryLight,
+            color = MaterialTheme.colorScheme.primary,
             thickness = 2.dp,
         )
     }
@@ -169,7 +173,7 @@ fun LooksState(viewModel: ClosetScreenViewModel) {
 }
 
 @Composable
-fun DownButton(onClick: () -> Unit ) {
+fun DownButton(onClick: () -> Unit) {
 
     //Низ
     Box(
@@ -185,7 +189,7 @@ fun DownButton(onClick: () -> Unit ) {
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            outlineLight
+                            MaterialTheme.colorScheme.outline
                         )
                     )
                 )
@@ -199,8 +203,8 @@ fun DownButton(onClick: () -> Unit ) {
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
                 .shadow(8.dp, CircleShape), // Тень для эффекта левитации
-            containerColor = primaryLight,
-            contentColor = onPrimaryLight
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -212,11 +216,11 @@ fun DownButton(onClick: () -> Unit ) {
 }
 
 @Composable
-fun Header(){
+fun Header() {
     //Заголовок
     Row(
         modifier = Modifier
-            .background(surfaceContainerHighLight)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.Top
@@ -225,7 +229,7 @@ fun Header(){
             text = "Closet",
             fontSize = 24.sp,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-            color = onSurfaceLight,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
         )
@@ -238,7 +242,7 @@ fun Header(){
 }
 
 @Composable
-fun Tag(){
+fun Tag() {
     //Теги
     Row(
         modifier = Modifier
@@ -249,7 +253,7 @@ fun Tag(){
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(primaryContainerLight)
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(start = 8.dp, end = 10.dp)
         ) {
             Row(
@@ -258,12 +262,12 @@ fun Tag(){
                 Image(
                     CloseIC,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(onPrimaryContainerLight)
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
                 )
                 Text(
                     text = "Sport Style",
                     modifier = Modifier.padding(2.dp),
-                    color = onPrimaryContainerLight
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
@@ -271,7 +275,7 @@ fun Tag(){
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(primaryContainerLight)
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(start = 8.dp, end = 10.dp)
         ) {
             Row(
@@ -280,12 +284,12 @@ fun Tag(){
                 Image(
                     CloseIC,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(onPrimaryContainerLight)
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
                 )
                 Text(
                     text = "White",
                     modifier = Modifier.padding(2.dp),
-                    color = onPrimaryContainerLight
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }

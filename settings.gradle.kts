@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Closet"
 include(":app")
- 
+include(":domain")
+include(":data")
