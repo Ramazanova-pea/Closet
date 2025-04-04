@@ -81,7 +81,7 @@ fun LogScreen(
             modifier = Modifier
                 .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
 

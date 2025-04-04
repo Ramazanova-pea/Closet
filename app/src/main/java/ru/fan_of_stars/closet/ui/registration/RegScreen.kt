@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import ru.fan_of_stars.closet.ui.theme.onSurfaceLight
 import ru.fan_of_stars.closet.ui.theme.*
 
@@ -29,6 +30,11 @@ import ru.fan_of_stars.closet.ui.theme.*
     showSystemUi = true,
     uiMode = UI_MODE_NIGHT_NO
 )
+@Composable
+fun RegScreenPreview() {
+    RegScreen(navController = rememberNavController(), paddingValues = PaddingValues(16.dp))
+}
+
 @Composable
 fun RegScreen(
     navController: NavController,
@@ -99,7 +105,7 @@ fun RegScreen(
             modifier = Modifier
                 .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {

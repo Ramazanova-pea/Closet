@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,15 +35,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import ru.fan_of_stars.closet.ui.icons.*
 import ru.fan_of_stars.closet.ui.theme.*
 
 @Preview(
     showBackground = true,
     showSystemUi = true,
-    uiMode = UI_MODE_NIGHT_NO,
-
+    uiMode = UI_MODE_NIGHT_NO
 )
+@Composable
+fun ClosetScreenPreview() {
+    ClosetScreen(navController = rememberNavController(), paddingValues = PaddingValues(16.dp))
+}
+
+
 @Composable
 fun ClosetScreen(
     navController: NavController,
@@ -61,10 +69,10 @@ fun ClosetScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Header()
+        Header(navController)
         when (state.value) {
-            is ClosetScreenStates.StateLooks -> LooksState(viewModel)
-            is ClosetScreenStates.StateClothes -> ClothesState(viewModel)
+            is ClosetScreenStates.StateLooks -> LooksState(viewModel, navController)
+            is ClosetScreenStates.StateClothes -> ClothesState(viewModel, navController)
             is ClosetScreenStates.StateIdle -> {}
 
         }
@@ -86,7 +94,7 @@ fun ClosetScreen(
 }
 
 @Composable
-fun ClothesState(viewModel: ClosetScreenViewModel) {
+fun ClothesState(viewModel: ClosetScreenViewModel, navController: NavController) {
     //Выбор гардероб
     Column(
         modifier = Modifier
@@ -115,11 +123,16 @@ fun ClothesState(viewModel: ClosetScreenViewModel) {
             Spacer(
                 modifier = Modifier.weight(1f)
             )
-            Image(
-                FilterIC,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-            )
+            IconButton(
+                onClick = {  }
+            ) {
+                Icon(imageVector = FilterIC, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
+            IconButton(
+                onClick = { navController.navigate("search_screen") }
+            ){
+                Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
         }
         Divider(
             color = MaterialTheme.colorScheme.primary,
@@ -130,7 +143,7 @@ fun ClothesState(viewModel: ClosetScreenViewModel) {
 
 
 @Composable
-fun LooksState(viewModel: ClosetScreenViewModel) {
+fun LooksState(viewModel: ClosetScreenViewModel, navController: NavController) {
     //Выбор образы
     Column(
         modifier = Modifier
@@ -158,11 +171,16 @@ fun LooksState(viewModel: ClosetScreenViewModel) {
             Spacer(
                 modifier = Modifier.weight(1f)
             )
-            Image(
-                FilterIC,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-            )
+            IconButton(
+                onClick = {  }
+            ) {
+                Icon(imageVector = FilterIC, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
+            IconButton(
+                onClick = { navController.navigate("search_screen") }
+            ){
+                Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
         }
         Divider(
             color = MaterialTheme.colorScheme.primary,
@@ -216,28 +234,33 @@ fun DownButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun Header() {
+fun Header(navController: NavController) {
     //Заголовок
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.Top
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "Closet",
             fontSize = 24.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
         )
-        Image(
-            SettingIC,
-            contentDescription = null,
-            modifier = Modifier.wrapContentWidth()
-        )
+        IconButton(
+            onClick = { navController.navigate("settings_screen") }
+        ) {
+            Image(
+                SettingIC,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+            )
+        }
+
     }
 }
 
