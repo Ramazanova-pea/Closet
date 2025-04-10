@@ -54,6 +54,10 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.7")
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.core.viewmodel)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

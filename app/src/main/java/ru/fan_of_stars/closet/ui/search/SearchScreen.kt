@@ -39,6 +39,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Preview(
     showBackground = true,
@@ -57,7 +61,7 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
     var searchText by remember { mutableStateOf("") }
     var history by remember { mutableStateOf(historyManager.getHistory()) }
     var isHistoryVisible by remember { mutableStateOf(false) }
-
+    var isLoading by remember { mutableStateOf(false) }
 
 
     val focusRequester = remember { FocusRequester() }
@@ -88,8 +92,19 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
             leadingIcon = {
                 IconButton(onClick = {
                     if (searchText.isNotBlank()) {
-                        historyManager.saveQuery(searchText) // Сохраняем в историю
-                        history = historyManager.getHistory() // Обновляем UI
+                        isLoading = true // Показываем индикатор загрузки
+                        isHistoryVisible = false
+                        focusManager.clearFocus()
+
+                        // 🕒 Симулируем "поиск"
+                        kotlinx.coroutines.GlobalScope.launch {
+                            delay(1500) // Задержка 1.5 секунды
+                            withContext(Dispatchers.Main) {
+                                historyManager.saveQuery(searchText)
+                                history = historyManager.getHistory()
+                                isLoading = false // Прячем индикатор
+                            }
+                        }
                     }
                     isHistoryVisible = false
                     focusManager.clearFocus()
@@ -107,7 +122,19 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
             interactionSource = interactionSource
         )
 
-        if(isHistoryVisible){
+        // Индикатор загрузки
+        if (isLoading) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                androidx.compose.material3.CircularProgressIndicator()
+            }
+        }
+
+        if(isHistoryVisible && !isLoading){
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
