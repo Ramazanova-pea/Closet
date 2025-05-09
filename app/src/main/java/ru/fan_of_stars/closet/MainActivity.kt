@@ -2,6 +2,7 @@ package ru.fan_of_stars.closet
 
 
 import AppTheme
+import android.app.Application
 import ru.fan_of_stars.closet.ui.theme.*
 import android.os.Bundle
 import android.util.Log
@@ -26,8 +27,12 @@ import androidx.navigation.compose.rememberNavController
 import ru.fan_of_stars.closet.ui.login.LogScreen
 import ru.fan_of_stars.closet.ui.registration.RegScreen
 import androidx.navigation.compose.*
+import com.fanofstars.data.appModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import ru.fan_of_stars.closet.ui.closet.ClosetScreen
 import ru.fan_of_stars.closet.ui.closet.ClosetScreenViewModel
+import ru.fan_of_stars.closet.ui.registration.RegScreenViewModel
 import ru.fan_of_stars.closet.ui.search.SearchHistoryManager
 import ru.fan_of_stars.closet.ui.search.SearchScreen
 import ru.fan_of_stars.closet.ui.settings.SettingsScreen
@@ -58,8 +63,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation(paddingValues: PaddingValues, themeViewModel: ThemeViewModel, historyManager: SearchHistoryManager) {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "closet_screen") {
-        composable("reg_screen") { RegScreen(navController, paddingValues) }
+    NavHost(navController, startDestination = "reg_screen") {
+        composable("reg_screen") {
+            val viewModel: RegScreenViewModel = viewModel()
+            RegScreen(viewModel,navController, paddingValues)
+        }
         composable("log_screen") { LogScreen(navController, paddingValues) }
         composable("closet_screen") {
             ClosetScreen(
@@ -72,4 +80,5 @@ fun AppNavigation(paddingValues: PaddingValues, themeViewModel: ThemeViewModel, 
         composable("search_screen") { SearchScreen(historyManager, paddingValues) }
     }
 }
+
 

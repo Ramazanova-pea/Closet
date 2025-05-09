@@ -96,7 +96,7 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
                         isHistoryVisible = false
                         focusManager.clearFocus()
 
-                        // 🕒 Симулируем "поиск"
+                        // Симулируем "поиск"
                         kotlinx.coroutines.GlobalScope.launch {
                             delay(1500) // Задержка 1.5 секунды
                             withContext(Dispatchers.Main) {

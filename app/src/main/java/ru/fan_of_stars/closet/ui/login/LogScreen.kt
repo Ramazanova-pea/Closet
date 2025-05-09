@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import ru.fan_of_stars.closet.ui.theme.*
 
 @Preview(
@@ -31,6 +32,14 @@ import ru.fan_of_stars.closet.ui.theme.*
     showSystemUi = true,
     uiMode = UI_MODE_NIGHT_NO
 )
+@Composable
+fun show(){
+    LogScreen(
+        navController = rememberNavController(),
+        paddingValues = PaddingValues(16.dp)
+    )
+}
+
 @Composable
 fun LogScreen(
     navController: NavController,
@@ -56,7 +65,7 @@ fun LogScreen(
         TextField(
             value = "",
             onValueChange = {},
-            label = { Text("Your phone*") },
+            label = { Text("Your login*") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
                 .padding(horizontal = 32.dp)

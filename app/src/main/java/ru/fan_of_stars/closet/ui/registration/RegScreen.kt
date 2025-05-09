@@ -2,6 +2,7 @@ package ru.fan_of_stars.closet.ui.registration
 
 import AppTheme
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,31 +16,29 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.fanofstars.domain.usecases.RegistrationUseCase
+import org.koin.compose.viewmodel.koinViewModel
 import ru.fan_of_stars.closet.ui.theme.onSurfaceLight
 import ru.fan_of_stars.closet.ui.theme.*
 
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
-@Composable
-fun RegScreenPreview() {
-    RegScreen(navController = rememberNavController(), paddingValues = PaddingValues(16.dp))
-}
-
 @Composable
 fun RegScreen(
+    viewModel: RegScreenViewModel = koinViewModel(),
     navController: NavController,
     paddingValues: PaddingValues
 ) {
+    val state = viewModel.state
+
     Column(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -49,8 +48,8 @@ fun RegScreen(
         Text(
             text = "Create your Closet!",
             fontSize = 24.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -59,8 +58,8 @@ fun RegScreen(
 
         TextField(
             value = "",
-            onValueChange = {},
-            label = { Text("Your phone*") },
+            onValueChange = { viewModel.OnEvent(RegistrationEvent.OnLoginChange(it)) },
+            label = { Text("Your login*") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
                 .padding(horizontal = 32.dp)
@@ -69,8 +68,8 @@ fun RegScreen(
         )
         TextField(
             value = "",
-            onValueChange = {},
-            label = { Text("Your name*") },
+            onValueChange = { viewModel.OnEvent(RegistrationEvent.OnUsernameChange(it)) },
+            label = { Text("Your username*") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
                 .padding(horizontal = 32.dp)
@@ -80,7 +79,18 @@ fun RegScreen(
 
         TextField(
             value = "",
-            onValueChange = {},
+            onValueChange = { viewModel.OnEvent(RegistrationEvent.OnEmailChange(it)) },
+            label = { Text("E-mail*") },
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .padding(horizontal = 32.dp)
+                .fillMaxWidth()
+
+        )
+
+        TextField(
+            value = "",
+            onValueChange = { viewModel.OnEvent(RegistrationEvent.OnPasswordChange(it)) },
             label = { Text("Password*") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -89,21 +99,17 @@ fun RegScreen(
 
         )
 
-        TextField(
-            value = "",
-            onValueChange = {},
-            label = { Text("Repeat password*") },
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .padding(horizontal = 32.dp)
-                .fillMaxWidth()
-
-        )
-
         Button(
-            onClick = { navController.navigate("closet_screen") },
+            onClick = {
+                viewModel.OnEvent(RegistrationEvent.Submit)
+                Toast.makeText(
+                    navController.context,
+                    "Registration successful!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                navController.navigate("closet_screen")},
             modifier = Modifier
-                .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally),
+                .align(alignment = Alignment.CenterHorizontally),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -116,11 +122,11 @@ fun RegScreen(
             onClick = { navController.navigate("log_screen") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
-                .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally)
+                .align(alignment = Alignment.CenterHorizontally)
         ) {
             Text(
                 text = "Already have an account?\nSign in!",
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary
             )
         }
