@@ -2,34 +2,21 @@ package ru.fan_of_stars.closet
 
 
 import AppTheme
-import android.app.Application
-import ru.fan_of_stars.closet.ui.theme.*
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHost
 import androidx.navigation.compose.rememberNavController
 import ru.fan_of_stars.closet.ui.login.LogScreen
 import ru.fan_of_stars.closet.ui.registration.RegScreen
 import androidx.navigation.compose.*
-import com.fanofstars.data.appModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
 import ru.fan_of_stars.closet.ui.closet.ClosetScreen
 import ru.fan_of_stars.closet.ui.closet.ClosetScreenViewModel
 import ru.fan_of_stars.closet.ui.registration.RegScreenViewModel
