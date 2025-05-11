@@ -23,6 +23,7 @@ import ru.fan_of_stars.closet.ui.registration.RegScreenViewModel
 import ru.fan_of_stars.closet.ui.search.SearchHistoryManager
 import ru.fan_of_stars.closet.ui.search.SearchScreen
 import ru.fan_of_stars.closet.ui.settings.SettingsScreen
+import androidx.lifecycle.viewmodel.compose.viewModel as viewModel1
 
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val themeViewModel: ThemeViewModel = viewModel()
+            val themeViewModel: ThemeViewModel = viewModel1()
             val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
             val historyManager = SearchHistoryManager(this)
 
@@ -52,15 +53,14 @@ fun AppNavigation(paddingValues: PaddingValues, themeViewModel: ThemeViewModel, 
     val navController = rememberNavController()
     NavHost(navController, startDestination = "reg_screen") {
         composable("reg_screen") {
-            val viewModel: RegScreenViewModel = viewModel()
-            RegScreen(viewModel,navController, paddingValues)
+            RegScreen(navController, paddingValues, )
         }
         composable("log_screen") { LogScreen(navController, paddingValues) }
         composable("closet_screen") {
             ClosetScreen(
                 navController,
-                ClosetScreenViewModel(),
-                paddingValues
+                paddingValues,
+
             )
         }
         composable("settings_screen") { SettingsScreen(paddingValues, themeViewModel) }

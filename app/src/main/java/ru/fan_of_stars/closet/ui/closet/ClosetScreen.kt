@@ -53,8 +53,8 @@ fun ClosetScreenPreview() {
 @Composable
 fun ClosetScreen(
     navController: NavController,
-    viewModel: ClosetScreenViewModel = ClosetScreenViewModel(),
     paddingValues: PaddingValues,
+    viewModel: ClosetScreenViewModel = ClosetScreenViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
 //    val state = ClosetScreenStates.StateLooks

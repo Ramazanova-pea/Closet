@@ -7,11 +7,11 @@ import org.koin.dsl.module
 import ru.fan_of_stars.closet.ui.registration.RegScreenViewModel
 
 val domainModule = module {
-    factory<RegistrationUseCase> { RegistrationUseCase(get())}
+    factory { RegistrationUseCase(get())}
 }
 
 val appModule = module {
-    single<RegScreenViewModel> {RegScreenViewModel(get())}
+    viewModel {RegScreenViewModel(get())}
 }
 
 val koinModules = listOf(dataModule, appModule, domainModule)

@@ -11,5 +11,5 @@ interface AuthApi {
     //fun login(@Body request: LoginRequest): Call<AuthResponse>
 
     @POST("register")
-    fun register(@Body request: RegistrationRequest): Call<AuthResponse>
+    suspend fun register(@Body request: RegistrationRequest): AuthResponse
 }

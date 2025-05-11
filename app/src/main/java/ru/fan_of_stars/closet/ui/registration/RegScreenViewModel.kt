@@ -1,5 +1,6 @@
 package ru.fan_of_stars.closet.ui.registration
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,18 +21,23 @@ class RegScreenViewModel(
     fun OnEvent(event: RegistrationEvent) {
         when (event) {
             is RegistrationEvent.OnUsernameChange -> {
+                Log.d("RegScreen", "OnUsernameChange: ${event.username}")
                 state = state.copy(username = event.username)
             }
             is RegistrationEvent.OnLoginChange -> {
+                Log.d("RegScreen", "OnLoginChange: ${event.login}")
                 state = state.copy(login = event.login)
             }
             is RegistrationEvent.OnEmailChange -> {
+                Log.d("RegScreen", "OnEmailChange: ${event.email}")
                 state = state.copy(email = event.email)
             }
             is RegistrationEvent.OnPasswordChange -> {
+                Log.d("RegScreen", "OnPasswordChange: ${event.password}")
                 state = state.copy(password = event.password)
             }
             RegistrationEvent.Submit -> {
+                Log.d("RegScreen", "Submit clicked")
                 registerUser()
             }
         }
@@ -47,6 +53,7 @@ class RegScreenViewModel(
                 password = state.password
             )
             val result = registerUserUseCase.invoke(data)
+            Log.d("RegScreen", "Registration result: $result")
             if (result.isSuccess) {
                 state = state.copy(token = result.getOrNull(), isLoading = false)
             } else {

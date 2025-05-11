@@ -7,6 +7,7 @@ class RegistrationUseCase(
     private val repository: AuthRepository
 ) {
     suspend operator fun invoke(data: RegistrationData): Result<String> {
+
         return repository.registerUser(data)
     }
 }
