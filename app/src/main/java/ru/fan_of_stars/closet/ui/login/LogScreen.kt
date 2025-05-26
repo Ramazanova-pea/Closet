@@ -1,30 +1,19 @@
 package ru.fan_of_stars.closet.ui.login
 
-import AppTheme
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
 import ru.fan_of_stars.closet.ui.theme.*
 
 @Preview(
@@ -33,7 +22,7 @@ import ru.fan_of_stars.closet.ui.theme.*
     uiMode = UI_MODE_NIGHT_NO
 )
 @Composable
-fun show(){
+fun ShowPreview() {
     LogScreen(
         navController = rememberNavController(),
         paddingValues = PaddingValues(16.dp)
@@ -43,8 +32,20 @@ fun show(){
 @Composable
 fun LogScreen(
     navController: NavController,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    viewModel: LoginViewModel = koinViewModel()
 ) {
+    val state = viewModel.state
+
+    // Если токен получен — перейти на главный экран
+    LaunchedEffect(state.token) {
+        if (state.token != null) {
+            navController.navigate("closet_screen") {
+                popUpTo("login_screen") { inclusive = true }
+            }
+        }
+    }
+
     Column(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -54,8 +55,8 @@ fun LogScreen(
         Text(
             text = "Open your Closet!",
             fontSize = 24.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -63,53 +64,59 @@ fun LogScreen(
         )
 
         TextField(
-            value = "",
-            onValueChange = {},
+            value = state.login,
+            onValueChange = { viewModel.onEvent(LoginEvent.OnLoginChange(it)) },
             label = { Text("Your login*") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
                 .padding(horizontal = 32.dp)
-                .fillMaxWidth(),
-
-
-            )
+                .fillMaxWidth()
+        )
 
         TextField(
-            value = "",
-            onValueChange = {},
+            value = state.password,
+            onValueChange = { viewModel.onEvent(LoginEvent.OnPasswordChange(it)) },
             label = { Text("Password*") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
                 .padding(horizontal = 32.dp)
                 .fillMaxWidth()
-
         )
 
+        if (state.error != null) {
+            Text(
+                text = state.error,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        }
+
         Button(
-            onClick = { navController.navigate("closet_screen") },
-            modifier = Modifier
-                .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally),
+            onClick = { viewModel.onEvent(LoginEvent.Submit) },
+            enabled = !state.isLoading,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
-
         ) {
-            Text("Open Closet!")
+            Text(if (state.isLoading) "Loading..." else "Open Closet!")
         }
 
         TextButton(
             onClick = { navController.navigate("reg_screen") },
             modifier = Modifier
                 .padding(bottom = 16.dp)
-                .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally)
+                .align(Alignment.CenterHorizontally)
         ) {
             Text(
-                text = "Don't have an account?\nLog in!",
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                text = "Don't have an account?\nRegister now!",
+                textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary
             )
         }
     }
-
 }

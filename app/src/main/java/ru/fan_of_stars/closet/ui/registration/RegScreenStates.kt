@@ -7,5 +7,6 @@ data class RegScreenStates (
     val password: String = "",
     val isLoading: Boolean = false,
     val token: String? = null,
+    val userId: String? = null, // 👈 Добавлено
     val error: String? = null
 )

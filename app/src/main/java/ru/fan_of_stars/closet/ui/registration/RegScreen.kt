@@ -1,6 +1,7 @@
 package ru.fan_of_stars.closet.ui.registration
 
 import AppTheme
+import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.util.Log
 import android.widget.Toast
@@ -22,6 +23,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,9 +45,19 @@ fun RegScreen(
     val state = viewModel.state
     val context = LocalContext.current
 
+    val sharedPreferences = remember {
+        context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+    }
+
     // Показываем Toast и навигируем, только если регистрация успешна
     LaunchedEffect(state.token) {
-        state.token?.let {
+        state.token?.let { token ->
+            state.userId?.let { userId ->
+                sharedPreferences.edit()
+                    .putString("token", token)
+                    .putString("userId", userId)
+                    .apply()
+            }
             Toast.makeText(context, "Registration successful!", Toast.LENGTH_SHORT).show()
             navController.navigate("closet_screen") {
                 popUpTo("registration_screen") { inclusive = true }

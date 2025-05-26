@@ -1,5 +1,6 @@
 package ru.fan_of_stars.closet.ui.registration
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,9 +56,18 @@ class RegScreenViewModel(
             val result = registerUserUseCase.invoke(data)
             Log.d("RegScreen", "Registration result: $result")
             if (result.isSuccess) {
-                state = state.copy(token = result.getOrNull(), isLoading = false)
+                val userData = result.getOrNull()
+                state = state.copy(
+                    token = userData?.token,
+                    userId = userData?.id,
+                    isLoading = false
+                )
+
             } else {
-                state = state.copy(error = result.exceptionOrNull()?.message, isLoading = false)
+                state = state.copy(
+                    error = result.exceptionOrNull()?.message,
+                    isLoading = false
+                )
             }
         }
     }

@@ -1,6 +1,6 @@
-package com.fanofstars.data.api.Auth.model
+package com.fanofstars.domain.model
 
-data class AuthResponse(
+data class UserData(
     val id: String,
     val login: String,
     val username: String,
