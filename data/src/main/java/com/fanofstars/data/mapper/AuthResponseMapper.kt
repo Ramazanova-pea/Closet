@@ -5,10 +5,11 @@ import com.fanofstars.domain.model.UserData
 
 fun AuthResponse.toDomain(): UserData {
     return UserData(
-        id = id,
-        login = login,
-        username = username,
-        email = email,
-        token = token
+        id = this.id,
+        login = this.login,
+        password = this.password,
+        username = this.username,
+        email = this.email,
+        token = this.token
     )
 }

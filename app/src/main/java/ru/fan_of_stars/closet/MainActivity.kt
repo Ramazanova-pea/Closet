@@ -63,7 +63,7 @@ fun AppNavigation(paddingValues: PaddingValues, themeViewModel: ThemeViewModel, 
 
             )
         }
-        composable("settings_screen") { SettingsScreen(paddingValues, themeViewModel) }
+        composable("settings_screen") { SettingsScreen(paddingValues, themeViewModel, ) }
         composable("search_screen") { SearchScreen(historyManager, paddingValues) }
     }
 }

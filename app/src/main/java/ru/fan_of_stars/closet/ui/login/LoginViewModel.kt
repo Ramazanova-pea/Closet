@@ -43,12 +43,24 @@ class LoginViewModel(
 
             if (result.isSuccess) {
                 val user = result.getOrNull()
-                state = state.copy(
-                    token = user?.token,
-                    username = user?.username,
-                    email = user?.email,
-                    isLoading = false
-                )
+                if(user != null){
+                    state = state.copy(
+                        login = state.login,
+                        password = state.password,
+                        id = user.id,
+                        token = user.token,
+                        username = user.username,
+                        email = user.email,
+                        isLoading = false
+                    )
+                }
+                else {
+                    state = state.copy(
+                        error = "User not found",
+                        isLoading = false
+                    )
+                }
+
             } else {
                 state = state.copy(
                     error = result.exceptionOrNull()?.message ?: "Unknown error",

@@ -1,11 +1,14 @@
 package ru.fan_of_stars.closet.ui.login
 
+import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,12 +40,26 @@ fun LogScreen(
 ) {
     val state = viewModel.state
 
+    val context = LocalContext.current
+    val sharedPreferences = remember {
+        context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+    }
+
     // Если токен получен — перейти на главный экран
     LaunchedEffect(state.token) {
         if (state.token != null) {
+            state.token?.let { token ->
+                sharedPreferences.edit()
+                    .putString("token", token)
+                    .apply()
+            }
+            Toast.makeText(context, "Token Succes: ${state.token}", Toast.LENGTH_LONG).show()
             navController.navigate("closet_screen") {
                 popUpTo("login_screen") { inclusive = true }
             }
+        }
+        else {
+            Toast.makeText(context, "Token faild: ${state.token}", Toast.LENGTH_LONG).show()
         }
     }
 
