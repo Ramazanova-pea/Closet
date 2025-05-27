@@ -19,6 +19,8 @@ import ru.fan_of_stars.closet.ui.registration.RegScreen
 import androidx.navigation.compose.*
 import ru.fan_of_stars.closet.ui.closet.ClosetScreen
 import ru.fan_of_stars.closet.ui.closet.ClosetScreenViewModel
+import ru.fan_of_stars.closet.ui.closet.addItem.AddItemScreen
+import ru.fan_of_stars.closet.ui.filter.FilterScreen
 import ru.fan_of_stars.closet.ui.registration.RegScreenViewModel
 import ru.fan_of_stars.closet.ui.search.SearchHistoryManager
 import ru.fan_of_stars.closet.ui.search.SearchScreen
@@ -51,7 +53,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation(paddingValues: PaddingValues, themeViewModel: ThemeViewModel, historyManager: SearchHistoryManager) {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "reg_screen") {
+    NavHost(navController, startDestination = "closet_screen") {
         composable("reg_screen") {
             RegScreen(navController, paddingValues, )
         }
@@ -65,6 +67,8 @@ fun AppNavigation(paddingValues: PaddingValues, themeViewModel: ThemeViewModel, 
         }
         composable("settings_screen") { SettingsScreen(paddingValues, themeViewModel, ) }
         composable("search_screen") { SearchScreen(historyManager, paddingValues) }
+        composable("add_item_screen") { AddItemScreen(navController) }
+        composable("filter_screen") { FilterScreen(navController) }
     }
 }
 

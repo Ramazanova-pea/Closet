@@ -1,5 +1,6 @@
 package ru.fan_of_stars.closet.ui.closet
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,19 +9,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class ClosetScreenViewModel : ViewModel() {
-    private val _state = MutableStateFlow<ClosetScreenStates>(ClosetScreenStates.StateClothes)
-    val state : StateFlow<ClosetScreenStates>
-        get() = _state
+    var showClothes by mutableStateOf(true)
+        private set
 
     var showAddClothes by mutableStateOf(false)
         private set
 
     fun onLooksClick() {
-        _state.value = ClosetScreenStates.StateLooks
+        showClothes = false
     }
 
     fun onClothesClick() {
-        _state.value = ClosetScreenStates.StateClothes
+        showClothes = true
         showAddClothes = true
     }
 
@@ -31,4 +31,7 @@ class ClosetScreenViewModel : ViewModel() {
     fun closeAddClothes() {
         showAddClothes = false
     }
+
+
 }
+

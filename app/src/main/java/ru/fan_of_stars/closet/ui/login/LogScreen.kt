@@ -53,13 +53,9 @@ fun LogScreen(
                     .putString("token", token)
                     .apply()
             }
-            Toast.makeText(context, "Token Succes: ${state.token}", Toast.LENGTH_LONG).show()
             navController.navigate("closet_screen") {
                 popUpTo("login_screen") { inclusive = true }
             }
-        }
-        else {
-            Toast.makeText(context, "Token faild: ${state.token}", Toast.LENGTH_LONG).show()
         }
     }
 

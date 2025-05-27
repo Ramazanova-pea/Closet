@@ -1,14 +1,16 @@
 package com.fanofstars.data.api.Auth
 
 import com.fanofstars.data.api.Auth.model.AuthResponse
+import com.fanofstars.data.api.Auth.model.ImagePathRequest
 import com.fanofstars.data.api.Auth.model.LoginRequest
 import com.fanofstars.data.api.Auth.model.RegistrationRequest
+import com.fanofstars.data.api.Auth.model.TagResponse
 import com.fanofstars.data.api.Auth.model.UserResponse
-import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
-interface AuthApi {
+interface AllApi {
     @POST("login")
     suspend fun login(@Body request: LoginRequest): AuthResponse
 
@@ -17,4 +19,10 @@ interface AuthApi {
 
     @POST("getUserByToken")
     suspend fun getUserByToken(@Body request: Map<String, String>): UserResponse
+
+    @GET("/tags")
+    suspend fun getTags(): List<TagResponse>
+
+    @POST("/uploadImagePath")
+    suspend fun uploadImagePath(@Body request: ImagePathRequest)
 }

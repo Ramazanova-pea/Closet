@@ -1,13 +1,12 @@
 package com.fanofstars.data.api.Auth
 
 import android.content.SharedPreferences
-import com.fanofstars.data.api.Auth.model.UserResponse
 import com.fanofstars.data.mapper.toEntity
 import com.fanofstars.domain.model.UserData
 import com.fanofstars.domain.repositories.UserRepository
 
 class UserRepositoryImpl(
-    private val apiService: AuthApi,
+    private val apiService: AllApi,
     private val sharedPreferences: SharedPreferences
 ) : UserRepository {
 

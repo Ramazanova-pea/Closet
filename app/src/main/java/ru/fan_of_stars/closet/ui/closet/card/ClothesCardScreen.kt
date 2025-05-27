@@ -1,4 +1,4 @@
-package ru.fan_of_stars.closet.ui.card
+package ru.fan_of_stars.closet.ui.closet.card
 
 import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
@@ -9,13 +9,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import ru.fan_of_stars.closet.ui.closet.Tag
 
 @Preview
 @Composable
@@ -40,7 +49,7 @@ fun ClothesCardScreen() {
     var isSelected by remember { mutableStateOf(false) }
     val content = LocalContext.current
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) Color.Red else Color.Gray,
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
         label = "BorderColorAnimation"
     )
     val scale by animateFloatAsState(
@@ -54,13 +63,10 @@ fun ClothesCardScreen() {
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = {
-                        // обычное нажатие
-                        Toast
-                            .makeText(/* context = */ content, /* text = */
-                                "Обычное нажатие", /* duration = */
-                                Toast.LENGTH_SHORT
-                            )
-                            .show()
+                        if (isSelected) isSelected = !isSelected
+                        else {
+                            Toast.makeText(content, "Обычное нажатие", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     onLongPress = {
                         // долгое нажатие
@@ -74,16 +80,32 @@ fun ClothesCardScreen() {
             border = BorderStroke(2.dp, borderColor),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Box(modifier = Modifier.padding(16.dp)) {
-                Column {
+            Box() {
+                Column(
+                ) {
+                    // Картинка
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceContainer,
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Item",
+                            modifier = Modifier.size(64.dp)
+                        )
+                    }
+
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
                         text = "Name",
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp
                     )
-
                 }
             }
         }
@@ -93,7 +115,7 @@ fun ClothesCardScreen() {
             Box(
                 modifier = Modifier
                     .size(16.dp)
-                    .background(Color.Red, CircleShape)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
                     .align(Alignment.TopStart)
                     .offset(x = 8.dp, y = 8.dp)
             )

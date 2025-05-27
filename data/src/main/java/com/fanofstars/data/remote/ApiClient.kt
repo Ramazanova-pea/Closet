@@ -1,6 +1,6 @@
 package com.fanofstars.data.remote
 
-import com.fanofstars.data.api.Auth.AuthApi
+import com.fanofstars.data.api.Auth.AllApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -12,5 +12,5 @@ object ApiClient {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val authApi: AuthApi = retrofit.create(AuthApi::class.java)
+    val allApi: AllApi = retrofit.create(AllApi::class.java)
 }

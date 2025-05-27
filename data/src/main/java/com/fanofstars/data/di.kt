@@ -1,18 +1,16 @@
 package com.fanofstars.data
 
-import com.fanofstars.data.api.Auth.AuthApi
+import com.fanofstars.data.api.Auth.AllApi
 import com.fanofstars.data.api.Auth.AuthRepositoryImpl
+import com.fanofstars.data.api.Auth.TagsRepositoryImpl
 import com.fanofstars.data.api.Auth.UserRepositoryImpl
-import com.fanofstars.data.api.Auth.model.AuthResponse
-import com.fanofstars.data.api.Auth.model.RegistrationRequest
 import com.fanofstars.domain.repositories.AuthRepository
+import com.fanofstars.domain.repositories.TagsRepository
 import com.fanofstars.domain.repositories.UserRepository
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
 
 private const val baseUrl = "https://ktor-closet.onrender.com/"
 
@@ -20,6 +18,7 @@ val dataModule = module {
     single<OkHttpClient> { OkHttpClient() }
     single <AuthRepository> { AuthRepositoryImpl(get()) }
     single <UserRepository> { UserRepositoryImpl(get(), get()) }
+    single <TagsRepository> { TagsRepositoryImpl(get()) }
     single <Retrofit>  {
         Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -27,6 +26,6 @@ val dataModule = module {
             .client(get())
             .build()
     }
-    single<AuthApi> { get<Retrofit>().create(AuthApi::class.java) }
+    single<AllApi> { get<Retrofit>().create(AllApi::class.java) }
 }
 

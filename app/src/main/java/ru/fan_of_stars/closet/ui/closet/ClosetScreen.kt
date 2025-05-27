@@ -2,11 +2,16 @@ package ru.fan_of_stars.closet.ui.closet
 
 
 import AppTheme
+import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -28,6 +33,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
+import ru.fan_of_stars.closet.ui.closet.card.ClothesCardScreen
 import ru.fan_of_stars.closet.ui.icons.*
 import ru.fan_of_stars.closet.ui.theme.*
 
@@ -54,47 +62,80 @@ fun ClosetScreenPreview() {
 fun ClosetScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    viewModel: ClosetScreenViewModel = ClosetScreenViewModel(),
+    viewModel: ClosetScreenViewModel = koinViewModel(),
 ) {
-    val state = viewModel.state.collectAsState()
-//    val state = ClosetScreenStates.StateLooks
-    val showAddClothes = remember { mutableStateOf(viewModel.showAddClothes) }
+    val context = LocalContext.current
+    val pref = context.getSharedPreferences("selected-tags", Context.MODE_PRIVATE)
+    val items = pref.getStringSet("selected_tags", emptySet())?.toList() ?: emptyList()
 
+    val showClothes = viewModel.showClothes
+    val showAddClothes = viewModel.showAddClothes
 
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(paddingValues)
     ) {
-        Header(navController)
-        when (state.value) {
-            is ClosetScreenStates.StateLooks -> LooksState(viewModel, navController)
-            is ClosetScreenStates.StateClothes -> ClothesState(viewModel, navController)
-            is ClosetScreenStates.StateIdle -> {}
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Header(navController)
+            if (showClothes) {
+                ClothesState(viewModel, navController)
+                if (items.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp)
+                    ) {
+                        items(items.size) {index ->
+                            val tag = items[index]
+                            Tag(text = tag) {
+                                // Удаляем тег из SharedPreferences
+                                removeTagFromPrefs(context, tag)
+                                // Принудительно перерисовываем экран (через recomposition)
+                                navController.navigate("closet_screen") {
+                                    popUpTo("closet_screen") { inclusive = true }
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
+                }
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(7) {
+                        ClothesCardScreen()
+                    }
+                }
+            } else {
+                LooksState(viewModel, navController)
+                // Здесь можешь добавить контент для Looks
+            }
+
 
         }
-        Tag()
-        DownButton(
-            onClick = {
-                when (state.value) {
-                    is ClosetScreenStates.StateLooks -> {}
-                    is ClosetScreenStates.StateClothes -> viewModel.showAddClothes()
-                    is ClosetScreenStates.StateIdle -> {}
-                }
-            }
-        )
-    }
-    if (showAddClothes.value) {
-        //AddClothes(/*onClose = { viewModel.closeAddClothes() }*/)
-    }
 
+        DownButton(navController, showClothes)
+
+        if (showAddClothes) {
+            // AddClothes()
+        }
+    }
 }
 
+
+
 @Composable
-fun ClothesState(viewModel: ClosetScreenViewModel, navController: NavController) {
+fun ClothesState(viewModel: ClosetScreenViewModel, navController: NavController, ) {
     //Выбор гардероб
     Column(
         modifier = Modifier
@@ -124,14 +165,24 @@ fun ClothesState(viewModel: ClosetScreenViewModel, navController: NavController)
                 modifier = Modifier.weight(1f)
             )
             IconButton(
-                onClick = {  }
+                onClick = {
+                    navController.navigate("filter_screen")
+                }
             ) {
-                Icon(imageVector = FilterIC, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    imageVector = FilterIC,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
             IconButton(
                 onClick = { navController.navigate("search_screen") }
-            ){
-                Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
         }
         Divider(
@@ -172,14 +223,24 @@ fun LooksState(viewModel: ClosetScreenViewModel, navController: NavController) {
                 modifier = Modifier.weight(1f)
             )
             IconButton(
-                onClick = {  }
+                onClick = {
+                    navController.navigate("filter_screen")
+                }
             ) {
-                Icon(imageVector = FilterIC, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    imageVector = FilterIC,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
             IconButton(
                 onClick = { navController.navigate("search_screen") }
-            ){
-                Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
         }
         Divider(
@@ -191,7 +252,7 @@ fun LooksState(viewModel: ClosetScreenViewModel, navController: NavController) {
 }
 
 @Composable
-fun DownButton(onClick: () -> Unit) {
+fun DownButton(navController: NavController,  showClothes: Boolean) {
 
     //Низ
     Box(
@@ -215,7 +276,10 @@ fun DownButton(onClick: () -> Unit) {
 
         //Кнопка
         FloatingActionButton(
-            onClick = onClick,
+            onClick = {
+                if (showClothes) navController.navigate("add_item_screen")
+                else Toast.makeText(navController.context, "Добавить образ", Toast.LENGTH_SHORT).show()
+            },
             modifier = Modifier
                 .size(100.dp)
                 .align(Alignment.BottomCenter)
@@ -265,57 +329,40 @@ fun Header(navController: NavController) {
 }
 
 @Composable
-fun Tag() {
-    //Теги
-    Row(
+fun Tag(
+    text: String,
+    onRemoveClick: () -> Unit
+) {
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
-
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(start = 8.dp, end = 10.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(start = 8.dp, end = 10.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    CloseIC,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
-                )
-                Text(
-                    text = "Sport Style",
-                    modifier = Modifier.padding(2.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-        }
-        Spacer(modifier = Modifier.size(8.dp))
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(start = 8.dp, end = 10.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    CloseIC,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
-                )
-                Text(
-                    text = "White",
-                    modifier = Modifier.padding(2.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
+            Image(
+                CloseIC,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
+                modifier = Modifier
+                    .size(16.dp)
+                    .clickable { onRemoveClick() } // 👈 вот тут!
+            )
+            Text(
+                text = text,
+                modifier = Modifier.padding(2.dp),
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
+}
+
+fun removeTagFromPrefs(context: Context, tag: String) {
+    val prefs = context.getSharedPreferences("selected-tags", Context.MODE_PRIVATE)
+    val savedTags = prefs.getStringSet("selected_tags", emptySet())?.toMutableSet() ?: mutableSetOf()
+    savedTags.remove(tag)
+    prefs.edit().putStringSet("selected_tags", savedTags).apply()
 }
 
