@@ -1,6 +1,6 @@
-package com.fanofstars.domain.model
+package com.fanofstars.data.api.Auth.model
 
-data class Item(
+data class CreateItemRequest(
     val token: String,
     val name: String,
     val imagePath: String,

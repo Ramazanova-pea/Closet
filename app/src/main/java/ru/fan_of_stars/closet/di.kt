@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import com.fanofstars.data.dataModule
+import com.fanofstars.domain.usecases.CreateItemUseCase
 import com.fanofstars.domain.usecases.GetTagsUseCase
 import com.fanofstars.domain.usecases.GetUserByTokenUseCase
 import com.fanofstars.domain.usecases.LoginUseCase
@@ -25,6 +26,7 @@ val domainModule = module {
     factory { GetUserByTokenUseCase(get()) }
     factory { GetTagsUseCase(get()) }
     factory { UploadImagePathUseCase(get()) }
+    factory { CreateItemUseCase(get()) }
 }
 
 val appModule = module {
@@ -34,7 +36,7 @@ val appModule = module {
     viewModel { UserViewModel(getUserByTokenUseCase = get()) }
     viewModel { ClosetScreenViewModel() }
     viewModel { FilterViewModel(get(), get()) }
-    viewModel { AddItemViewModel(get(), get(), get()) }
+    viewModel { AddItemViewModel(get(), get(), get(), get()) }
     single <SharedPreferences> {androidContext().getSharedPreferences("auth", Context.MODE_PRIVATE)}
 }
 

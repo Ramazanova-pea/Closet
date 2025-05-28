@@ -20,11 +20,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import ru.fan_of_stars.closet.ui.closet.Tag
 
@@ -34,6 +36,16 @@ fun AddItemScreen(
     viewModel: AddItemViewModel = koinViewModel()
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val name by viewModel.name
+    val notes by viewModel.notes
+
+    // Слушаем событие закрытия
+    LaunchedEffect(Unit) {
+        viewModel.itemSavedEvent.collect {
+            navController.popBackStack() // Возвращаемся на предыдущий экран
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -89,16 +101,27 @@ fun AddItemScreen(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Item",
-                        modifier = Modifier.size(64.dp)
-                    )
+                    if (viewModel.selectedImageUri != null) {
+                        // Показываем фото
+                        AsyncImage( // Используй Coil для загрузки Uri
+                            model = viewModel.selectedImageUri,
+                            contentDescription = "Selected Item",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        // Заглушка
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Item",
+                            modifier = Modifier.size(64.dp)
+                        )
+                    }
                 }
                 // Поле ввода Name
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { },
+                    value = name,
+                    onValueChange = { viewModel.name.value = it },
                     label = { Text("Name") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -149,8 +172,8 @@ fun AddItemScreen(
 
                 // Поле заметок
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { },
+                    value = notes,
+                    onValueChange = { viewModel.notes.value = it },
                     placeholder = { Text("Notes...") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -159,7 +182,10 @@ fun AddItemScreen(
 
                 // Кнопка
                 Button(
-                    onClick = { },
+                    onClick = {
+                        viewModel.onSaveItem()
+                    },
+
                     shape = CircleShape,
                     modifier = Modifier
                         .size(64.dp)

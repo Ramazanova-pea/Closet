@@ -1,6 +1,7 @@
 package com.fanofstars.data.api.Auth
 
 import com.fanofstars.data.api.Auth.model.AuthResponse
+import com.fanofstars.data.api.Auth.model.CreateItemRequest
 import com.fanofstars.data.api.Auth.model.ImagePathRequest
 import com.fanofstars.data.api.Auth.model.LoginRequest
 import com.fanofstars.data.api.Auth.model.RegistrationRequest
@@ -25,4 +26,7 @@ interface AllApi {
 
     @POST("/uploadImagePath")
     suspend fun uploadImagePath(@Body request: ImagePathRequest)
+
+    @POST("/createItem")
+    suspend fun createItem(@Body request: CreateItemRequest)
 }
