@@ -69,14 +69,14 @@ fun AddItemScreen(
                 )
 
 
-                //val imagePicker = rememberLauncherForActivityResult(
-                //    contract = ActivityResultContracts.GetContent(),
-                //    onResult = { uri: Uri? ->
-                //        if (uri != null) {
-                //            viewModel.onImageSelected(uri)
-                //        }
-                //    }
-                //)
+                val imagePicker = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.GetContent(),
+                    onResult = { uri: Uri? ->
+                        if (uri != null) {
+                            viewModel.onImageSelected(uri)
+                        }
+                    }
+                )
 
                 // Картинка (заглушка)
                 Box(
@@ -85,7 +85,7 @@ fun AddItemScreen(
                         .aspectRatio(1f)
                         .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                         .clickable {
-                            //imagePicker.launch("image/*")
+                            imagePicker.launch("image/*")
                         },
                     contentAlignment = Alignment.Center
                 ) {

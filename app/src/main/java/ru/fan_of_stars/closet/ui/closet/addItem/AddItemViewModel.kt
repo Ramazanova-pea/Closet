@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fanofstars.domain.usecases.GetTagsUseCase
+import com.fanofstars.domain.usecases.UploadImagePathUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,10 +18,9 @@ import java.io.FileOutputStream
 
 class AddItemViewModel(
     private val getTagsUseCase: GetTagsUseCase,
-    application: Application
+    private val uploadImagePathUseCase: UploadImagePathUseCase,
+    private val application: Application
 ) : ViewModel() {
-    //private val context = getApplication<Application>().applicationContext
-
     val allTags = mutableStateListOf<String>()
     val selectedTags = mutableStateListOf<String>()
 
@@ -49,31 +49,41 @@ class AddItemViewModel(
         }
     }
 
-    //fun onImageSelected(uri: Uri) {
-      //  viewModelScope.launch {
-        //    val filePath = saveImageToInternalStorage(uri)
-          //  if (filePath != null) {
-            //    // Отправь ссылку на сервер
-              //  uploadImagePathToServer(filePath)
-           // }
-       // }
-    //}
+    private suspend fun uploadImagePathToServer(path: String) {
+        try {
+            uploadImagePathUseCase(path)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Здесь можно отправить событие для UI, если нужно
+        }
+    }
 
-    //private suspend fun saveImageToInternalStorage(uri: Uri): String? {
-//        return withContext(Dispatchers.IO) {
-//            try {
-//                val inputStream = context.contentResolver.openInputStream(uri)
-//                val fileName = "img_${System.currentTimeMillis()}.jpg"
-//                val file = File(context.filesDir, fileName)
-//                val outputStream = FileOutputStream(file)
-//                inputStream?.copyTo(outputStream)
-//                inputStream?.close()
-//                outputStream.close()
-//                file.absolutePath
-    //           } catch (e: Exception) {
-    //               e.printStackTrace()
-//                null
-//            }
-//        }
-//    }
+
+    fun onImageSelected(uri: Uri) {
+        viewModelScope.launch {
+            val filePath = saveImageToInternalStorage(application.applicationContext, uri)
+            if (filePath != null) {
+                uploadImagePathToServer(filePath)
+            }
+        }
+    }
+
+    private suspend fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val fileName = "img_${System.currentTimeMillis()}.jpg"
+                val file = File(context.filesDir, fileName)
+                val outputStream = FileOutputStream(file)
+                inputStream?.copyTo(outputStream)
+                inputStream?.close()
+                outputStream.close()
+                file.absolutePath // вернём путь
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
 }

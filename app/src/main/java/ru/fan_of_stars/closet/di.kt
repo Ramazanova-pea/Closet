@@ -8,6 +8,7 @@ import com.fanofstars.domain.usecases.GetTagsUseCase
 import com.fanofstars.domain.usecases.GetUserByTokenUseCase
 import com.fanofstars.domain.usecases.LoginUseCase
 import com.fanofstars.domain.usecases.RegistrationUseCase
+import com.fanofstars.domain.usecases.UploadImagePathUseCase
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -23,6 +24,7 @@ val domainModule = module {
     factory { LoginUseCase(get())}
     factory { GetUserByTokenUseCase(get()) }
     factory { GetTagsUseCase(get()) }
+    factory { UploadImagePathUseCase(get()) }
 }
 
 val appModule = module {
@@ -32,7 +34,7 @@ val appModule = module {
     viewModel { UserViewModel(getUserByTokenUseCase = get()) }
     viewModel { ClosetScreenViewModel() }
     viewModel { FilterViewModel(get(), get()) }
-    viewModel { AddItemViewModel(get(), get()) }
+    viewModel { AddItemViewModel(get(), get(), get()) }
     single <SharedPreferences> {androidContext().getSharedPreferences("auth", Context.MODE_PRIVATE)}
 }
 
