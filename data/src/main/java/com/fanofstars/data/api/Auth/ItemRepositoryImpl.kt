@@ -15,4 +15,17 @@ class ItemRepositoryImpl(private val api: AllApi) : ItemRepository {
         )
         api.createItem(request)
     }
+
+    override suspend fun getItems(token: String): List<Item> {
+        val response = api.getItems(mapOf("token" to token))
+        return response.map { itemResponse ->
+            Item(
+                token = token,
+                name = itemResponse.name,
+                imagePath = itemResponse.imagePath,
+                tags = itemResponse.tags,
+                notes = itemResponse.notes ?: ""
+            )
+        }
+    }
 }

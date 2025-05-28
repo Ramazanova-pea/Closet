@@ -4,12 +4,15 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -39,41 +42,58 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.fanofstars.domain.model.Item
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
+import ru.fan_of_stars.closet.ui.closet.card.ClothesCardScreen
+import ru.fan_of_stars.closet.ui.closet.card.ItemViewModel
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
-@Composable
-fun SearchScreenPreview() {
-    SearchScreen(historyManager = SearchHistoryManager(LocalContext.current), paddingValues = PaddingValues(16.dp))
-}
+
 
 
 @Composable
-fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingValues){
-    val context = LocalContext.current
+fun SearchScreen(
+    navController: NavController,
+    historyManager: SearchHistoryManager,
+    paddingValues: PaddingValues
+) {
     var searchText by remember { mutableStateOf("") }
     var history by remember { mutableStateOf(historyManager.getHistory()) }
     var isHistoryVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
-
+    val itemViewModel: ItemViewModel = koinViewModel()
+    var filteredItems by remember { mutableStateOf<List<Item>>(emptyList()) }
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
 
+    // Выносим логику поиска в отдельную функцию
+    fun performSearch(query: String) {
+        if (query.isNotBlank()) {
+            isLoading = true
+            isHistoryVisible = false
+            focusManager.clearFocus()
+
+            filteredItems = itemViewModel.items.filter {
+                it.name.contains(query, ignoreCase = true)
+            }
+
+            historyManager.saveQuery(query)
+            history = historyManager.getHistory()
+            isLoading = false
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-    ){
+    ) {
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
@@ -82,7 +102,7 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
                 .fillMaxWidth()
                 .padding(16.dp)
                 .focusRequester(focusRequester)
-                .onFocusChanged { isHistoryVisible = it.isFocused && history.isNotEmpty()  },
+                .onFocusChanged { isHistoryVisible = it.isFocused && history.isNotEmpty() },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
@@ -91,30 +111,17 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
             singleLine = true,
             leadingIcon = {
                 IconButton(onClick = {
-                    if (searchText.isNotBlank()) {
-                        isLoading = true // Показываем индикатор загрузки
-                        isHistoryVisible = false
-                        focusManager.clearFocus()
-
-                        // Симулируем "поиск"
-                        kotlinx.coroutines.GlobalScope.launch {
-                            delay(1500) // Задержка 1.5 секунды
-                            withContext(Dispatchers.Main) {
-                                historyManager.saveQuery(searchText)
-                                history = historyManager.getHistory()
-                                isLoading = false // Прячем индикатор
-                            }
-                        }
-                    }
-                    isHistoryVisible = false
-                    focusManager.clearFocus()
+                    performSearch(searchText)
                 }) {
                     Icon(imageVector = Icons.Default.Search, contentDescription = "Поиск")
                 }
             },
             trailingIcon = {
                 if (searchText.isNotEmpty()) {
-                    IconButton(onClick = { searchText = "" }) {
+                    IconButton(onClick = {
+                        searchText = ""
+                        filteredItems = emptyList()
+                    }) {
                         Icon(imageVector = Icons.Default.Clear, contentDescription = "Очистить")
                     }
                 }
@@ -134,7 +141,43 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
             }
         }
 
-        if(isHistoryVisible && !isLoading){
+
+        // Сетка результатов или сообщение "Ничего не найдено"
+        if (!isLoading && searchText.isNotBlank()) {
+            if (filteredItems.isNotEmpty()) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    items(filteredItems.size) { index ->
+                        val item = filteredItems[index]
+                        ClothesCardScreen(navController, item)
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Ничего не найдено",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        }
+
+
+
+        // История поиска
+        if (isHistoryVisible && !isLoading) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,16 +191,15 @@ fun SearchScreen(historyManager: SearchHistoryManager, paddingValues: PaddingVal
                             .fillMaxWidth()
                             .clickable {
                                 searchText = item
-                                historyManager.saveQuery(item)
-                                history = historyManager.getHistory()
-                                isHistoryVisible = false
-                                focusManager.clearFocus()
+                                performSearch(item) // 🔥 Сразу начинаем поиск
                             }
                             .padding(top = 8.dp, bottom = 8.dp, start = 32.dp, end = 16.dp),
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Divider(
-                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                     )
                 }

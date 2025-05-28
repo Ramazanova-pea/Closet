@@ -1,7 +1,6 @@
 package ru.fan_of_stars.closet.ui.closet
 
 
-import AppTheme
 import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.widget.Toast
@@ -16,6 +15,7 @@ import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,8 +23,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import ru.fan_of_stars.closet.ui.closet.card.ClothesCardScreen
+import ru.fan_of_stars.closet.ui.closet.card.ItemViewModel
 import ru.fan_of_stars.closet.ui.icons.*
-import ru.fan_of_stars.closet.ui.theme.*
 
 @Preview(
     showBackground = true,
@@ -66,7 +65,14 @@ fun ClosetScreen(
 ) {
     val context = LocalContext.current
     val pref = context.getSharedPreferences("selected-tags", Context.MODE_PRIVATE)
-    val items = pref.getStringSet("selected_tags", emptySet())?.toList() ?: emptyList()
+    val tags = pref.getStringSet("selected_tags", emptySet())?.toList() ?: emptyList()
+
+    val selectedItems = remember { mutableStateListOf<String>() }
+
+    val itemViewModel: ItemViewModel = koinViewModel()
+    LaunchedEffect(Unit) {
+        itemViewModel.loadItems()
+    }
 
     val showClothes = viewModel.showClothes
     val showAddClothes = viewModel.showAddClothes
@@ -84,14 +90,14 @@ fun ClosetScreen(
             Header(navController)
             if (showClothes) {
                 ClothesState(viewModel, navController)
-                if (items.isNotEmpty()) {
+                if (tags.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp, end = 16.dp)
                     ) {
-                        items(items.size) {index ->
-                            val tag = items[index]
+                        items(tags.size) { index ->
+                            val tag = tags[index]
                             Tag(text = tag) {
                                 // Удаляем тег из SharedPreferences
                                 removeTagFromPrefs(context, tag)
@@ -104,18 +110,50 @@ fun ClosetScreen(
                         }
                     }
                 }
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(7) {
-                        ClothesCardScreen()
+
+                if (itemViewModel.isLoading) {
+                    // Только область карточек покажет индикатор
+                    CircularProgressIndicator()
+                } else {
+                    val filteredItems = if (tags.isNotEmpty()) {
+                        itemViewModel.items.filter { item ->
+                            tags.all { tag -> item.tags.contains(tag) }
+                        }
+                    } else {
+                        itemViewModel.items
                     }
+                    if(filteredItems.isEmpty()){
+                        Box(
+                            modifier = Modifier.fillMaxSize()
+                        ){
+                            Text(
+                                text = "Одежда не найдена",
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+                    else{
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        ) {
+                            items(filteredItems.size) { index ->
+                                val item = filteredItems[index]
+                                ClothesCardScreen(
+                                    navController = navController,
+                                    item = item,
+                                    selectedItems = selectedItems
+                                )
+                            }
+                        }
+                    }
+
                 }
+
             } else {
                 LooksState(viewModel, navController)
                 // Здесь можешь добавить контент для Looks
@@ -124,7 +162,7 @@ fun ClosetScreen(
 
         }
 
-        DownButton(navController, showClothes)
+        DownButton(navController, showClothes, selectedCount = selectedItems.size)
 
         if (showAddClothes) {
             // AddClothes()
@@ -252,13 +290,14 @@ fun LooksState(viewModel: ClosetScreenViewModel, navController: NavController) {
 }
 
 @Composable
-fun DownButton(navController: NavController,  showClothes: Boolean) {
-
-    //Низ
+fun DownButton(
+    navController: NavController,
+    showClothes: Boolean,
+    selectedCount: Int
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        //Затемнение
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -274,17 +313,22 @@ fun DownButton(navController: NavController,  showClothes: Boolean) {
                 )
         )
 
-        //Кнопка
         FloatingActionButton(
             onClick = {
-                if (showClothes) navController.navigate("add_item_screen")
-                else Toast.makeText(navController.context, "Добавить образ", Toast.LENGTH_SHORT).show()
+                if (selectedCount >= 2) {
+                    // Логика для выбранных элементов
+                    Toast.makeText(navController.context, "Действие с $selectedCount элементами", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Старая логика
+                    if (showClothes) navController.navigate("add_item_screen")
+                    else Toast.makeText(navController.context, "Добавить образ", Toast.LENGTH_SHORT).show()
+                }
             },
             modifier = Modifier
                 .size(100.dp)
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
-                .shadow(8.dp, CircleShape), // Тень для эффекта левитации
+                .shadow(8.dp, CircleShape),
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ) {
@@ -300,22 +344,24 @@ fun DownButton(navController: NavController,  showClothes: Boolean) {
 @Composable
 fun Header(navController: NavController) {
     //Заголовок
-    Row(
+    Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .fillMaxWidth()
             .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+
     ) {
         Text(
             text = "Closet",
+            modifier = Modifier.align(Alignment.Center),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+
         )
         IconButton(
+            modifier = Modifier.align(Alignment.CenterEnd),
             onClick = { navController.navigate("settings_screen") }
         ) {
             Image(

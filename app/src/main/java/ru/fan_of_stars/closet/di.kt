@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.fanofstars.data.dataModule
 import com.fanofstars.domain.usecases.CreateItemUseCase
+import com.fanofstars.domain.usecases.GetItemsUseCase
 import com.fanofstars.domain.usecases.GetTagsUseCase
 import com.fanofstars.domain.usecases.GetUserByTokenUseCase
 import com.fanofstars.domain.usecases.LoginUseCase
@@ -15,6 +16,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.fan_of_stars.closet.ui.closet.ClosetScreenViewModel
 import ru.fan_of_stars.closet.ui.closet.addItem.AddItemViewModel
+import ru.fan_of_stars.closet.ui.closet.card.ItemViewModel
 import ru.fan_of_stars.closet.ui.filter.FilterViewModel
 import ru.fan_of_stars.closet.ui.login.LoginViewModel
 import ru.fan_of_stars.closet.ui.registration.RegScreenViewModel
@@ -27,6 +29,7 @@ val domainModule = module {
     factory { GetTagsUseCase(get()) }
     factory { UploadImagePathUseCase(get()) }
     factory { CreateItemUseCase(get()) }
+    factory { GetItemsUseCase(get()) }
 }
 
 val appModule = module {
@@ -37,6 +40,7 @@ val appModule = module {
     viewModel { ClosetScreenViewModel() }
     viewModel { FilterViewModel(get(), get()) }
     viewModel { AddItemViewModel(get(), get(), get(), get()) }
+    single { ItemViewModel(get(), get()) }
     single <SharedPreferences> {androidContext().getSharedPreferences("auth", Context.MODE_PRIVATE)}
 }
 

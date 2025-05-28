@@ -3,6 +3,7 @@ package com.fanofstars.data.api.Auth
 import com.fanofstars.data.api.Auth.model.AuthResponse
 import com.fanofstars.data.api.Auth.model.CreateItemRequest
 import com.fanofstars.data.api.Auth.model.ImagePathRequest
+import com.fanofstars.data.api.Auth.model.ItemResponse
 import com.fanofstars.data.api.Auth.model.LoginRequest
 import com.fanofstars.data.api.Auth.model.RegistrationRequest
 import com.fanofstars.data.api.Auth.model.TagResponse
@@ -29,4 +30,8 @@ interface AllApi {
 
     @POST("/createItem")
     suspend fun createItem(@Body request: CreateItemRequest)
+
+    @POST("/getItems")
+    suspend fun getItems(@Body request: Map<String, String>): List<ItemResponse>
+
 }
