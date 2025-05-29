@@ -12,19 +12,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import ru.fan_of_stars.closet.ui.login.LogScreen
 import ru.fan_of_stars.closet.ui.registration.RegScreen
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
+import com.google.gson.Gson
 import org.koin.androidx.compose.koinViewModel
 import ru.fan_of_stars.closet.ui.closet.ClosetScreen
-import ru.fan_of_stars.closet.ui.closet.ClosetScreenViewModel
 import ru.fan_of_stars.closet.ui.closet.addItem.AddItemScreen
+import ru.fan_of_stars.closet.ui.closet.addLook.AddLookScreen
 import ru.fan_of_stars.closet.ui.closet.card.FullClothesCardScreen
 import ru.fan_of_stars.closet.ui.closet.card.ItemViewModel
 import ru.fan_of_stars.closet.ui.filter.FilterScreen
-import ru.fan_of_stars.closet.ui.registration.RegScreenViewModel
 import ru.fan_of_stars.closet.ui.search.SearchHistoryManager
 import ru.fan_of_stars.closet.ui.search.SearchScreen
 import ru.fan_of_stars.closet.ui.settings.SettingsScreen
@@ -82,6 +83,15 @@ fun AppNavigation(paddingValues: PaddingValues, themeViewModel: ThemeViewModel, 
                     item = item
                 )
             }
+        }
+        composable(
+            "add_look_screen/{selectedItems}",
+            arguments = listOf(navArgument("selectedItems") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val selectedItemsJson = backStackEntry.arguments?.getString("selectedItems") ?: "[]"
+            val selectedItemsList = Gson().fromJson(selectedItemsJson, Array<String>::class.java).toList()
+
+            AddLookScreen(navController, selectedItemsList)
         }
     }
 }

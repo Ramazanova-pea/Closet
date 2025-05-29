@@ -125,7 +125,8 @@ class AddItemViewModel(
                     name = name.value,
                     imagePath = imagePath!!,
                     tags = selectedTags.toList(),
-                    notes = notes.value
+                    notes = notes.value,
+                    idItem = null
                 )
 
                 createItemUseCase(item)

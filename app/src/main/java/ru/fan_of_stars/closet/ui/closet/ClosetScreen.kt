@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -24,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,9 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
 import org.koin.androidx.compose.koinViewModel
 import ru.fan_of_stars.closet.ui.closet.card.ClothesCardScreen
 import ru.fan_of_stars.closet.ui.closet.card.ItemViewModel
+import ru.fan_of_stars.closet.ui.closet.card.LookCardScreen
 import ru.fan_of_stars.closet.ui.icons.*
 
 @Preview(
@@ -156,13 +161,36 @@ fun ClosetScreen(
 
             } else {
                 LooksState(viewModel, navController)
-                // Здесь можешь добавить контент для Looks
+                val looks by viewModel.looks.collectAsState()
+
+                if (looks.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            text = "Образы не найдены",
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.Gray
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        items(looks.size) { index ->
+                            val look = looks[index]
+                            LookCardScreen(look)
+                        }
+                    }
+                }
+
             }
 
 
         }
 
-        DownButton(navController, showClothes, selectedCount = selectedItems.size)
+        DownButton(navController, showClothes, selectedItems)
 
         if (showAddClothes) {
             // AddClothes()
@@ -261,17 +289,6 @@ fun LooksState(viewModel: ClosetScreenViewModel, navController: NavController) {
                 modifier = Modifier.weight(1f)
             )
             IconButton(
-                onClick = {
-                    navController.navigate("filter_screen")
-                }
-            ) {
-                Icon(
-                    imageVector = FilterIC,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            IconButton(
                 onClick = { navController.navigate("search_screen") }
             ) {
                 Icon(
@@ -280,6 +297,7 @@ fun LooksState(viewModel: ClosetScreenViewModel, navController: NavController) {
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
+
         }
         Divider(
             color = MaterialTheme.colorScheme.primary,
@@ -293,7 +311,7 @@ fun LooksState(viewModel: ClosetScreenViewModel, navController: NavController) {
 fun DownButton(
     navController: NavController,
     showClothes: Boolean,
-    selectedCount: Int
+    selectedItems: List<String>
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -315,11 +333,10 @@ fun DownButton(
 
         FloatingActionButton(
             onClick = {
-                if (selectedCount >= 2) {
-                    // Логика для выбранных элементов
-                    Toast.makeText(navController.context, "Действие с $selectedCount элементами", Toast.LENGTH_SHORT).show()
+                if (selectedItems.size >= 2) {
+                    val selectedItemsJson = Gson().toJson(selectedItems)
+                    navController.navigate("add_look_screen/$selectedItemsJson")
                 } else {
-                    // Старая логика
                     if (showClothes) navController.navigate("add_item_screen")
                     else Toast.makeText(navController.context, "Добавить образ", Toast.LENGTH_SHORT).show()
                 }
@@ -394,7 +411,7 @@ fun Tag(
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
                 modifier = Modifier
                     .size(16.dp)
-                    .clickable { onRemoveClick() } // 👈 вот тут!
+                    .clickable { onRemoveClick() }
             )
             Text(
                 text = text,

@@ -67,6 +67,7 @@ fun SearchScreen(
     var isLoading by remember { mutableStateOf(false) }
     val itemViewModel: ItemViewModel = koinViewModel()
     var filteredItems by remember { mutableStateOf<List<Item>>(emptyList()) }
+    var isSearchPerformed by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -78,6 +79,7 @@ fun SearchScreen(
             isLoading = true
             isHistoryVisible = false
             focusManager.clearFocus()
+            isSearchPerformed = true
 
             filteredItems = itemViewModel.items.filter {
                 it.name.contains(query, ignoreCase = true)
@@ -121,6 +123,7 @@ fun SearchScreen(
                     IconButton(onClick = {
                         searchText = ""
                         filteredItems = emptyList()
+                        isSearchPerformed = false
                     }) {
                         Icon(imageVector = Icons.Default.Clear, contentDescription = "Очистить")
                     }
@@ -143,7 +146,7 @@ fun SearchScreen(
 
 
         // Сетка результатов или сообщение "Ничего не найдено"
-        if (!isLoading && searchText.isNotBlank()) {
+        if (!isLoading && isSearchPerformed) { // <--- Используем флаг, а не просто текст
             if (filteredItems.isNotEmpty()) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),

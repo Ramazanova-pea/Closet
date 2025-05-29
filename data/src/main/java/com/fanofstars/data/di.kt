@@ -4,11 +4,13 @@ import com.fanofstars.data.api.Auth.AllApi
 import com.fanofstars.data.api.Auth.AuthRepositoryImpl
 import com.fanofstars.data.api.Auth.ImageRepositoryImpl
 import com.fanofstars.data.api.Auth.ItemRepositoryImpl
+import com.fanofstars.data.api.Auth.LookRepositoryImpl
 import com.fanofstars.data.api.Auth.TagsRepositoryImpl
 import com.fanofstars.data.api.Auth.UserRepositoryImpl
 import com.fanofstars.domain.repositories.AuthRepository
 import com.fanofstars.domain.repositories.ImageRepository
 import com.fanofstars.domain.repositories.ItemRepository
+import com.fanofstars.domain.repositories.LookRepository
 import com.fanofstars.domain.repositories.TagsRepository
 import com.fanofstars.domain.repositories.UserRepository
 import okhttp3.OkHttpClient
@@ -25,6 +27,8 @@ val dataModule = module {
     single <TagsRepository> { TagsRepositoryImpl(get()) }
     single <ImageRepository> { ImageRepositoryImpl(get()) }
     single <ItemRepository> { ItemRepositoryImpl(get())}
+    single <LookRepository> { LookRepositoryImpl(get())}
+    single <LookRepository> { LookRepositoryImpl(get()) }
     single <Retrofit>  {
         Retrofit.Builder()
             .baseUrl(baseUrl)

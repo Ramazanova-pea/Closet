@@ -76,6 +76,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.coil.compose)
+    implementation(libs.gson)
 
     implementation(project(":domain"))
     implementation(project(":data"))

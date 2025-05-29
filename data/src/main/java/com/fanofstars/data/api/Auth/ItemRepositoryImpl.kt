@@ -24,7 +24,8 @@ class ItemRepositoryImpl(private val api: AllApi) : ItemRepository {
                 name = itemResponse.name,
                 imagePath = itemResponse.imagePath,
                 tags = itemResponse.tags,
-                notes = itemResponse.notes ?: ""
+                notes = itemResponse.notes ?: "",
+                idItem = ""
             )
         }
     }
